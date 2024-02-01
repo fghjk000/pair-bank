@@ -1,113 +1,113 @@
-from uuid import uuid4
-# uuid에 uuid4를 꺼내온다.
+import pickle
 
+from account import Account
 
-class Account:
-    # Account 라는 객체 생성
-
-    def __init__(self, user_name):
-        # 함수
-        self.user_name = user_name
-        # 이름
-        self.account_number = str(uuid4())
-        # 계좌 번호
-        self.balance = 0
-        # 잔액
-    def deposit(self):
-        print("=== 입금 ===")  # deposit
-        try:
-            # 시도해서 맞으면 실행
-            amount = int(input("금액 : "))
-        except ValueError:
-            # 다른 벨류이면 >> 숫자가아닌 문자 입력시
-            print("숫자를 입력해주세요.")
-            return
-        if amount <= 0:
-            # 음수 입력시
-            print("0보다 큰 금액을 입력해주세요.")
-            return
-        current_account.balance += amount
-
-        print(f"잔액: {current_account.balance}")
-
-    def withdraw(self):
-        print("=== 출금 ===")  # withdraw
-        try:
-            amount = int(input("출금액 : "))
-        except ValueError:
-            print("숫자를 입력해주세요.")
-            return
-
-        if amount <= 0:
-            print("0보다 큰 금액을 입력해주세요.")
-            return
-
-        elif current_account.balance < amount:
-            print("잔액보다 큰 금액은 출금하실수 없습니다.")
-            return
-
-        current_account.balance -= amount
-        print(f"잔액: {current_account.balance}")
+# map = {
+#     "key": "value"
+# }
+# map['아이디'] = Account("아이디")
+# value = map['key']
+#
+# if '아이디' in map:
+#     print("키가 있습니다.")
+#
+# a = []
+# b = {}
 
 if __name__ == '__main__':
+    try:
+        with open("account", "rb") as f:
+            account_table = pickle.load(f)
+
+    except FileNotFoundError:
+        account_table = {}
+
     # void main() 이랑 같은 의미 시작점
     print("Pair Bank")
     # 출력
     # 로그인 회원가입 종료..
     current_account = None
+    flag = True
 
-    # 로그인 서비스
-    while current_account is None:
-        print("==== 메뉴 ====")
-        print("1. 로그인")
-        print("2. 회원가입")
-        print("3. 종료")
-        choice = input("입력 : ")
-        if choice == "1":
-            ...
-        if choice == "2":
-            print("=== 회원가입 ===")
-            username = input("ID : ")
-            username = username.replace(" ", "")
-            if len(username) <= 0:
-                print("아이디를 입력해주세요.")
-                continue
+    while flag:
+        # 로그인 서비스
+        while current_account is None:
+            print("==== 메뉴 ====")
+            print("1. 로그인")
+            print("2. 회원가입")
+            print("3. 종료")
+            choice = input("입력 : ")
+            if choice == "1":
+                print("=== 로그인 ===")
+                username = input("ID : ")
+                if username not in account_table:
+                    print("존재하지 않는 아이디입니다.")
+                    continue
 
-            current_account = Account(username)
+                current_account = account_table[username]
 
-            print(f"ID : {current_account.user_name}")
-            # Account 함수에 이름저장
-            print(f"계좌번호 : {current_account.account_number}")
-            # uuid4 로 계좌 번호 출력
-            print(f"잔액 : {current_account.balance}")
-            # 잔액조회
-        if choice == "3":
-            print("종료합니다.")
-            break
+            if choice == "2":
+                print("=== 회원가입 ===")
+                username = input("ID : ")
+                username = username.replace(" ", "")
+                if len(username) <= 0:
+                    print("아이디를 입력해주세요.")
+                    continue
 
-    # 뱅킹 서비스
-    while current_account is not None:
-        # 반복문
-        print("--- 메뉴 ---")
-        print("1. 입금")
-        print("2. 출금")
-        print("3. 잔액 조회")
-        print("4. 이체")
-        print("5. 종료")
-        choice = input("입력 : ")
-        if choice == "1":
-            current_account.deposit()
+                current_account = Account(username)
+                account_table[username] = current_account
 
-        elif choice == "2":
-            current_account.withdraw()
+                print(f"ID : {current_account.user_name}")
+                # Account 함수에 이름저장
+                print(f"계좌번호 : {current_account.account_number}")
+                # uuid4 로 계좌 번호 출력
+                print(f"잔액 : {current_account.balance}")
+                # 잔액조회
+            if choice == "3":
+                print("종료합니다.")
+                flag = False
+                break
 
-        elif choice == "3":
-            print(f"현재 잔액: {current_account.balance}")
+        # 뱅킹 서비스
+        while current_account is not None:
+            # 반복문
+            print("--- 메뉴 ---")
+            print("1. 입금")
+            print("2. 출금")
+            print("3. 잔액 조회")
+            print("4. 이체")
+            print("5. 로그아웃")
+            choice = input("입력 : ")
+            if choice == "1":
+                current_account.deposit()
 
-        elif choice == "4":
-            ...
+            elif choice == "2":
+                current_account.withdraw()
 
-        elif choice == "5":
-            print("종료합니다.")
-            break
-            # 종료
+            elif choice == "3":
+                print(f"현재 잔액: {current_account.balance}")
+
+            elif choice == "4":
+                # 이체 시 필요한 데이터
+                # 1. 보낼 상대의 정보 (계좌번호 or 아이디)
+                # 1-1. 존재하는 아이디 or 계좌번호인지 확인
+                # 2. 이체할 금액
+                # 2-1. 단 이체할 금액은 내 잔액보다 작아야함
+                print("이체할 아이디를 적으시오.")
+                username = input("ID : ")
+                if username not in account_table:
+                    print("존재하지 않는 아이디 입니다.")
+                    continue
+
+                other_user = account_table[username]
+                amount = current_account.withdraw()
+                other_user.deposit(amount)
+
+            elif choice == "5":
+                print("로그아웃 합니다.")
+                current_account = None
+                break
+                # 종료
+
+    with open("account", "wb") as f:
+        pickle.dump(account_table, f)
