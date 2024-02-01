@@ -13,7 +13,41 @@ class Account:
         # 계좌 번호
         self.balance = 0
         # 잔액
+    def deposit(self):
+        print("=== 입금 ===")  # deposit
+        try:
+            # 시도해서 맞으면 실행
+            amount = int(input("금액 : "))
+        except ValueError:
+            # 다른 벨류이면 >> 숫자가아닌 문자 입력시
+            print("숫자를 입력해주세요.")
+            return
+        if amount <= 0:
+            # 음수 입력시
+            print("0보다 큰 금액을 입력해주세요.")
+            return
+        current_account.balance += amount
 
+        print(f"잔액: {current_account.balance}")
+
+    def withdraw(self):
+        print("=== 출금 ===")  # withdraw
+        try:
+            amount = int(input("출금액 : "))
+        except ValueError:
+            print("숫자를 입력해주세요.")
+            return
+
+        if amount <= 0:
+            print("0보다 큰 금액을 입력해주세요.")
+            return
+
+        elif current_account.balance < amount:
+            print("잔액보다 큰 금액은 출금하실수 없습니다.")
+            return
+
+        current_account.balance -= amount
+        print(f"잔액: {current_account.balance}")
 
 if __name__ == '__main__':
     # void main() 이랑 같은 의미 시작점
@@ -62,42 +96,10 @@ if __name__ == '__main__':
         print("5. 종료")
         choice = input("입력 : ")
         if choice == "1":
-            print("=== 입금 ===")  # deposit
-            try:
-                # 시도해서 맞으면 실행
-                amount = int(input("입금액 : "))
-            except ValueError:
-                # 다른 벨류이면 >> 숫자가아닌 문자 입력시
-                print("숫자를 입력해주세요.")
-                continue
+            current_account.deposit()
 
-            if amount <= 0:
-                # 음수 입력시
-                print("0보다 큰 금액을 입력해주세요.")
-                continue
-
-            current_account.balance += amount
-            # amount 금액 입력값을 balance 더하라
-            print(f"잔액: {current_account.balance}")
-            # 저장된 잔액 조회
         elif choice == "2":
-            print("=== 출금 ===")  # withdraw
-            try:
-                amount = int(input("출금액 : "))
-            except ValueError:
-                print("숫자를 입력해주세요.")
-                continue
-
-            if amount <= 0:
-                print("0보다 큰 금액을 입력해주세요.")
-                continue
-
-            elif current_account.balance < amount:
-                print("잔액보다 큰 금액은 출금하실수 없습니다.")
-                continue
-
-            current_account.balance -= amount
-            print(f"잔액: {current_account.balance}")
+            current_account.withdraw()
 
         elif choice == "3":
             print(f"현재 잔액: {current_account.balance}")
