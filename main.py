@@ -1,6 +1,7 @@
 import pickle
 # pickle 사용
-from account import Account
+from domains.account.models import Account
+from domains.account.services import AccountService
 # account 에 Account를 불러들임
 
 # map = {
@@ -57,14 +58,8 @@ if __name__ == '__main__':
                 # 로그인 출력
                 username = input("ID : ")
                 # username 을 input 으로 설정
-                if username not in account_table:
-                    # 입력한 username이 account_table에 없을시 실행
-                    print("존재하지 않는 아이디입니다.")
-                    # 문구 출력
-                    continue
-                    # 가까운 반복문으로 돌아가기
-
-                current_account = account_table[username]
+                
+                current_account = AccountService.find_by_username(account_table, username)
                 # account_table 안에 username 라는 (붕어빵)을 current_account로 설정
 
             if choice == "2":
@@ -120,41 +115,57 @@ if __name__ == '__main__':
             # 다음 if 문을 실행하기위해 choice 값 설정
             if choice == "1":
                 # choice 값을 1번 설정시 실행
-                current_account.deposit()
+                print("=== 입금 ===")  # deposit
+                money = AccountService.input_deposit()
+                if money is None:
+                    continue
+
+                # 비즈니스 로직
+                current_account.deposit(money)
                 # current_account를 deposit(설정해둿던 입금함수사용)
+
+                print("입금이 완료되었습니다.")
+                print(f"잔액 : {current_account.balance}")
 
             elif choice == "2":
                 # choice 값을 2번으로 설정시 실행
-                current_account.withdraw()
+                print("=== 출금 ===")  # withdraw
+                money = AccountService.input_withdraw(current_account.balance)
+                if money is None:
+                    continue
+
+                # 비즈니스 로직
+                current_account.withdraw(money)
                 # current_account를 withdraw(설정해둿던 출금함수사용)
+
+                print("출금이 완료되었습니다.")
+                print(f"잔액 : {current_account.balance}")
+
             elif choice == "3":
                 # choice 값을 3번으로 설정시 실행
                 print(f"현재 잔액: {current_account.balance}")
                 # 설정한 current_account에 잔액조회
             elif choice == "4":
                 # choice 값을 4번으로 설정시 실행
-
-                # 이체 시 필요한 데이터
-                # 1. 보낼 상대의 정보 (계좌번호 or 아이디)
-                # 1-1. 존재하는 아이디 or 계좌번호인지 확인
-                # 2. 이체할 금액
-                # 2-1. 단 이체할 금액은 내 잔액보다 작아야함
+                print("=== 계좌 이체 ===")
                 print("이체할 아이디를 적으시오.")
                 # 문구 출력
                 username = input("ID : ")
                 # 이체할 username 설정
-                if username not in account_table:
-                    # if문을 사용하여 account_table에 username이 없을시 실행
-                    print("존재하지 않는 아이디 입니다.")
-                    # 문구 출력
-                    continue
-                    # 가까운 반복문으로 복귀
-                other_user = account_table[username]
+
+                other_user = AccountService.find_by_username(account_table, username)
+
+                money = AccountService.input_withdraw(current_account.balance)
+
                 # 위에서 설정한 accout_table에있는 username이라는 (붕어빵)하나를 other_user라는 변수에 저장
-                amount = current_account.withdraw()
+                current_account.withdraw(money)
                 # 기존에 설정되있던 current_account를 withdraw로 출금시킨값을 amount에 저장
-                other_user.balance += amount
+
+                other_user.deposit(money)
                 # amount에 저장되있는 출금시킨 값을 other_user 라는 input으로 설정한 변수에 balnce값에 축적시킴
+
+                print("이체가 완료되었습니다.")
+                print(f"잔액 : {current_account.balance}")
 
             elif choice == "5":
                 # choice 5번을 설정시 실행
