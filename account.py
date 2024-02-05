@@ -27,9 +27,8 @@ class Account:
             print("0보다 큰 금액을 입력해주세요.")
             return
         self.balance += amount
-
         print(f"잔액: {self.balance}")
-
+        return amount
     def withdraw(self):
         print("=== 출금 ===")  # withdraw
         try:
@@ -48,3 +47,4 @@ class Account:
 
         self.balance -= amount
         print(f"잔액: {self.balance}")
+        return amount
